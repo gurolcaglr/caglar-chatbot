@@ -5,191 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caglar Consulting Chat</title>
     <link href="./dist/output.css" rel="stylesheet">
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 </head>
 <body class="bg-gray-100">
     <div id="root"></div>
     <script type="text/babel">
-        const config = {
-            openaiApiKey: process.env.OPENAI_API_KEY,
-            companyInfo: {
-                name: "Caglar Consulting",
-                email: "info@caglar.consulting",
-                phone: "+44 7379 411170",
-                location: "London, UK"
-            }
-        };
-
-        const preparedResponses = {
-            "price": "Our pricing packages are as follows:\n- Corporate website: £3,000-£6,000\n- E-commerce: £6,000-£12,000\n- Personal website: £1,500-£2,500\nPlease let us know your specific requirements for a detailed quote.",
-            "portfolio": `At ${config.companyInfo.name}, we have completed various projects across different industries. Some of our recent work includes e-commerce platforms for retail brands, corporate websites for financial institutions, and personal portfolios for artists.`,
-            "contact": `You can reach us through:\n- Email: ${config.companyInfo.email}\n- Phone: ${config.companyInfo.phone}\n- Location: ${config.companyInfo.location}`,
-            "timeline": "Project timelines vary depending on complexity:\n- Personal websites: 2-4 weeks\n- Corporate websites: 4-8 weeks\n- E-commerce platforms: 8-12 weeks",
-            "cafe": "For café websites, we offer a specialized package including:\n- Modern, responsive design\n- Online menu integration\n- Table reservation system\n- Photo gallery\n- Contact form\n- Google Maps integration\nStarting from £3,000. Would you like to discuss the specific features you need?",
-            "restaurant": "Our restaurant website package includes:\n- Online reservation system\n- Interactive menu with photos\n- Integration with delivery platforms\n- Customer reviews section\n- Special events/promotions page\nStarting from £3,500. Shall we discuss your specific requirements?",
-            "shop": "For retail businesses, we provide:\n- Full e-commerce functionality\n- Secure payment processing\n- Inventory management\n- Customer accounts\n- Order tracking\n- Mobile-friendly design\nStarting from £6,000. Would you like to know more?",
-            "payment": "We accept various payment methods:\n- Bank transfer\n- Credit/Debit cards\n- Payment plans available for projects over £5,000\nWe typically require a 50% deposit to begin work.",
-            "hosting": "Our hosting packages include:\n- Secure SSL certificate\n- Daily backups\n- 24/7 monitoring\n- Technical support\nHosting starts from £25/month. Would you like more details?",
-            "maintenance": "We offer ongoing maintenance packages:\n- Regular updates and security patches\n- Content updates\n- Technical support\n- Performance optimization\nMaintenance plans start from £100/month.",
-            "process": "Our development process includes:\n1. Initial consultation\n2. Design mockups\n3. Development phase\n4. Testing\n5. Client review\n6. Launch\nWould you like to know more about any of these stages?"
-        };
-
-        const App = () => {
-            const [messages, setMessages] = React.useState([]);
-            const [input, setInput] = React.useState('');
-            const [isTyping, setIsTyping] = React.useState(false);
-
-            React.useEffect(() => {
-                const timestamp = new Date().toLocaleTimeString();
-                setMessages([{
-                    type: 'bot',
-                    text: `Welcome to ${config.companyInfo.name}! How can I assist you with your web development needs today?`,
-                    timestamp: timestamp
-                }]);
-            }, []);
-
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                if (!input.trim()) return;
-
-                const timestamp = new Date().toLocaleTimeString();
-                const userMessage = input;
-                
-                setMessages(prev => [...prev, { 
-                    type: 'user', 
-                    text: input,
-                    timestamp: timestamp
-                }]);
-                setInput('');
-                setIsTyping(true);
-
-                try {
-                    // Check prepared responses first
-                    const lowerMessage = userMessage.toLowerCase();
-                    for (const [keyword, response] of Object.entries(preparedResponses)) {
-                        if (lowerMessage.includes(keyword)) {
-                            setMessages(prev => [...prev, { 
-                                type: 'bot', 
-                                text: response,
-                                timestamp: new Date().toLocaleTimeString()
-                            }]);
-                            setIsTyping(false);
-                            return;
-                        }
-                    }
-
-                    // OpenAI request
-                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${config.openaiApiKey}`
-                        },
-                        body: JSON.stringify({
-                            model: "gpt-3.5-turbo",
-                            messages: [
-                                {
-                                    role: "system",
-                                    content: `You are a professional representative of ${config.companyInfo.name}, a web design agency based in London. Provide detailed, helpful responses while maintaining a professional tone.`
-                                },
-                                {
-                                    role: "user",
-                                    content: userMessage
-                                }
-                            ]
-                        })
-                    });
-
-                    const data = await response.json();
-                    if (data.choices && data.choices[0]) {
-                        setMessages(prev => [...prev, {
-                            type: 'bot',
-                            text: data.choices[0].message.content,
-                            timestamp: new Date().toLocaleTimeString()
-                        }]);
-                    } else {
-                        throw new Error('Invalid response from OpenAI');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    setMessages(prev => [...prev, {
-                        type: 'bot',
-                        text: `I apologize, but I encountered an issue. Please contact us directly at ${config.companyInfo.email} or ${config.companyInfo.phone} for immediate assistance.`,
-                        timestamp: new Date().toLocaleTimeString()
-                    }]);
-                } finally {
-                    setIsTyping(false);
+        console.log('Script başladı');
+        try {
+            const config = {
+                companyInfo: {
+                    name: "Caglar Consulting",
+                    email: "info@caglar.consulting",
+                    phone: "+44 7379 411170",
+                    location: "London, UK"
                 }
             };
 
-            return (
-                <div className="w-full max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
-                    <div className="bg-black p-4 rounded-t-lg flex items-center space-x-3">
-                        <div className="w-8 h-8">
-                            <svg viewBox="0 0 200 200" className="w-full h-full fill-white">
-                                <path d="M100 0C44.8 0 0 44.8 0 100s44.8 100 100 100c55.2 0 100-44.8 100-100S155.2 0 100 0zm0 180c-44.1 0-80-35.9-80-80s35.9-80 80-80s80 35.9 80 80s-35.9 80-80 80z"/>
-                                <path d="M150 90H50c-5.5 0-10 4.5-10 10s4.5 10 10 10h100c5.5 0 10-4.5 10-10s-4.5-10-10-10z"/>
-                            </svg>
+            const App = () => {
+                const [messages, setMessages] = React.useState([]);
+                const [input, setInput] = React.useState('');
+                const [isTyping, setIsTyping] = React.useState(false);
+                const messagesEndRef = React.useRef(null);
+
+                React.useEffect(() => {
+                    setMessages([{
+                        type: 'bot',
+                        text: `Welcome to ${config.companyInfo.name}! How can I assist you with your web development needs today?`
+                    }]);
+                }, []);
+
+                const handleSubmit = async (e) => {
+                    e.preventDefault();
+                    if (!input.trim()) return;
+
+                    setMessages(prev => [...prev, { type: 'user', text: input }]);
+                    setInput('');
+                    setIsTyping(true);
+
+                    try {
+                        const response = await fetch('http://localhost:3000/api/chat', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ message: input })
+                        });
+
+                        const data = await response.json();
+                        if (data.response) {
+                            setMessages(prev => [...prev, {
+                                type: 'bot',
+                                text: data.response
+                            }]);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        setMessages(prev => [...prev, {
+                            type: 'bot',
+                            text: `I apologize, but I encountered an issue. Please contact us at ${config.companyInfo.email}`
+                        }]);
+                    } finally {
+                        setIsTyping(false);
+                    }
+                };
+
+                return (
+                    <div className="w-full max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
+                        <div className="bg-black p-4 rounded-t-lg flex items-center space-x-3">
+                            <h2 className="text-lg font-bold text-white">{config.companyInfo.name}</h2>
                         </div>
-                        <h2 className="text-lg font-bold text-white">{config.companyInfo.name}</h2>
-                    </div>
-                    
-                    <div className="h-96 overflow-y-auto mb-4 p-4 bg-gray-50 rounded">
-                        {messages.map((message, index) => (
-                            <div
-                                key={index}
-                                className={`mb-3 p-3 rounded-lg ${
-                                    message.type === 'user'
-                                        ? 'bg-blue-100 ml-auto max-w-[80%]'
-                                        : 'bg-gray-200 mr-auto max-w-[80%]'
-                                }`}
-                            >
-                                <div className="flex flex-col">
-                                    <span className="text-sm text-gray-500 mb-1">
-                                        {message.timestamp}
-                                    </span>
-                                    <div className="break-words">
-                                        {message.text}
-                                    </div>
+                        
+                        <div className="h-96 overflow-y-auto mb-4 p-4 bg-gray-50 rounded">
+                            {messages.map((message, index) => (
+                                <div
+                                    key={index}
+                                    className={`mb-3 p-3 rounded-lg ${
+                                        message.type === 'user'
+                                            ? 'bg-blue-100 ml-auto max-w-[80%]'
+                                            : 'bg-gray-200 mr-auto max-w-[80%]'
+                                    }`}
+                                >
+                                    {message.text}
                                 </div>
-                            </div>
-                        ))}
-                        {isTyping && (
-                            <div className="bg-gray-200 w-16 p-3 rounded-lg animate-pulse">
-                                typing...
-                            </div>
-                        )}
+                            ))}
+                            {isTyping && (
+                                <div className="bg-gray-200 w-16 p-3 rounded-lg animate-pulse">
+                                    typing...
+                                </div>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="flex gap-2">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder="Type your message here..."
+                                className="flex-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-black"
+                            />
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors"
+                            >
+                                Send
+                            </button>
+                        </form>
+
+                        <div className="mt-4 text-sm text-gray-500 text-center">
+                            <p>Need immediate assistance?</p>
+                            <p>Contact us: {config.companyInfo.email} | {config.companyInfo.phone}</p>
+                        </div>
                     </div>
+                );
+            };
 
-                    <form onSubmit={handleSubmit} className="flex gap-2">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder="Type your message here..."
-                            className="flex-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-black"
-                        />
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors"
-                        >
-                            Send
-                        </button>
-                    </form>
-
-                    <div className="mt-4 text-sm text-gray-500 text-center">
-                        <p>Need immediate assistance?</p>
-                        <p>Contact us: {config.companyInfo.email} | {config.companyInfo.phone}</p>
-                    </div>
-                </div>
-            );
-        };
-
-        const container = document.getElementById('root');
-        const root = ReactDOM.createRoot(container);
-        root.render(<App />);
+            const container = document.getElementById('root');
+            const root = ReactDOM.createRoot(container);
+            root.render(<App />);
+        } catch (error) {
+            console.error('Hata:', error);
+        }
     </script>
 </body>
 </html>
