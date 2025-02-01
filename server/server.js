@@ -6,9 +6,14 @@ import OpenAI from 'openai';
 dotenv.config();
 
 const app = express();
+
+// CORS ayarlarını güncelliyoruz
 app.use(cors({
-    origin: ['http://localhost:8080', 'https://caglar-chatbot.netlify.app']
+    origin: 'http://127.0.0.1:8080', // Frontend'in çalıştığı adres
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
 }));
+
 app.use(express.json());
 
 const openai = new OpenAI({

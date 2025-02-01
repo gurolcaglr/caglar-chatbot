@@ -40,31 +40,40 @@
                     e.preventDefault();
                     if (!input.trim()) return;
 
+                    // Kullanıcı mesajını hemen göster
                     setMessages(prev => [...prev, { type: 'user', text: input }]);
+                    const userMessage = input;
                     setInput('');
                     setIsTyping(true);
 
                     try {
-                        const response = await fetch('http://localhost:3000/api/chat', {
+                        console.log('Sending request to backend...'); // Debug için log
+                        const response = await fetch('https://caglar-chatbot-backend.onrender.com/api/chat', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({ message: input })
+                            body: JSON.stringify({ message: userMessage })
                         });
 
+                        console.log('Response received:', response); // Debug için log
+
                         const data = await response.json();
+                        console.log('Data:', data); // Debug için log
+
                         if (data.response) {
                             setMessages(prev => [...prev, {
                                 type: 'bot',
                                 text: data.response
                             }]);
+                        } else {
+                            throw new Error('Invalid response format');
                         }
                     } catch (error) {
-                        console.error('Error:', error);
+                        console.error('Error in handleSubmit:', error); // Detaylı hata logu
                         setMessages(prev => [...prev, {
                             type: 'bot',
-                            text: `I apologize, but I encountered an issue. Please contact us at ${config.companyInfo.email}`
+                            text: `I apologize, but I encountered an issue. Please contact us at ${config.companyInfo.email} or ${config.companyInfo.phone}`
                         }]);
                     } finally {
                         setIsTyping(false);
